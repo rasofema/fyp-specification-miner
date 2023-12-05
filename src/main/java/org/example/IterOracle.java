@@ -15,11 +15,14 @@ enum Function {
 };
 
 public class IterOracle implements SingleQueryOracleDFA<Function> {
-    private final ArrayList<Integer> bl;
+    private ArrayList<Integer> bl;
     private Iterator<Integer> iter;
     public IterOracle() {
+        reset();
+    }
+
+    private void reset() {
         this.bl = new ArrayList<>();
-        bl.add(0);
         iter = bl.iterator();
     }
 
@@ -27,6 +30,9 @@ public class IterOracle implements SingleQueryOracleDFA<Function> {
         switch (function) {
             case hasNextTrue -> {
                 if (!this.iter.hasNext()) {
+                    if (this.bl.isEmpty()) {
+                        this.bl.add(0);
+                    }
                     this.iter = this.bl.iterator();
                     if (!this.iter.hasNext()) throw new RuntimeException("Iterator should have next");
                 }
@@ -51,11 +57,8 @@ public class IterOracle implements SingleQueryOracleDFA<Function> {
 
     @Override
     public Boolean answerQuery(Word<Function> prefix, Word<Function> suffix) {
-        boolean result = true;
-        prefix.forEach(this::step);
-
-        for (Function f : suffix)
-            result = step(f);
-        return result;
+        reset();
+        return prefix.concat(suffix).stream()
+                .allMatch(this::step);
     }
 }

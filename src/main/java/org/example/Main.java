@@ -1,27 +1,21 @@
 package org.example;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
 import de.learnlib.algorithm.lstar.dfa.ClassicLStarDFA;
 import de.learnlib.algorithm.lstar.dfa.ClassicLStarDFABuilder;
-import de.learnlib.algorithm.lstar.dfa.LStarDFAUtil;
 import de.learnlib.datastructure.observationtable.OTUtils;
 import de.learnlib.datastructure.observationtable.writer.ObservationTableASCIIWriter;
 import de.learnlib.oracle.MembershipOracle.DFAMembershipOracle;
 import de.learnlib.oracle.equivalence.DFAWpMethodEQOracle;
 import de.learnlib.query.DefaultQuery;
-import de.learnlib.util.statistic.SimpleProfiler;
 import net.automatalib.alphabet.Alphabet;
-import net.automatalib.alphabet.Alphabets;
 import net.automatalib.alphabet.GrowingMapAlphabet;
-import net.automatalib.automaton.fsa.CompactDFA;
 import net.automatalib.automaton.fsa.DFA;
-import net.automatalib.automaton.procedural.SPA;
 import net.automatalib.serialization.dot.GraphDOT;
-import net.automatalib.util.automaton.builder.AutomatonBuilders;
 import net.automatalib.visualization.Visualization;
-import net.automatalib.word.Word;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 
@@ -69,7 +63,7 @@ public class Main {
         // show model
         System.out.println();
         System.out.println("Model: ");
-        GraphDOT.write(learner.getHypothesisModel(), alphabet, System.out); // may throw IOException!
+        GraphDOT.write(learner.getHypothesisModel(), alphabet, new FileWriter("hyp.dot")); // may throw IOException!
 
         Visualization.visualize(learner.getHypothesisModel(), alphabet);
 
