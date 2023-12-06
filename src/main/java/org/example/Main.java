@@ -6,8 +6,6 @@ import java.util.Arrays;
 
 import de.learnlib.algorithm.lstar.dfa.ClassicLStarDFA;
 import de.learnlib.algorithm.lstar.dfa.ClassicLStarDFABuilder;
-import de.learnlib.datastructure.observationtable.OTUtils;
-import de.learnlib.datastructure.observationtable.writer.ObservationTableASCIIWriter;
 import de.learnlib.oracle.MembershipOracle.DFAMembershipOracle;
 import de.learnlib.oracle.equivalence.DFAWpMethodEQOracle;
 import de.learnlib.query.DefaultQuery;
@@ -21,24 +19,16 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-
-        DFAMembershipOracle<Function> mqOracle = new IterOracle();
-
-        Alphabet<Function> alphabet = new GrowingMapAlphabet<>();
-        alphabet.addAll(Arrays.asList(Function.values()));
-
+    private static DFA<?, Function> learn(DFAMembershipOracle<Function> mqOracle, Alphabet<Function> alphabet) {
         // construct L* instance
         ClassicLStarDFA<Function> learner =
                 new ClassicLStarDFABuilder<Function>().withAlphabet(alphabet) // input alphabet
                         .withOracle(mqOracle) // membership oracle
                         .create();
-
         DFAWpMethodEQOracle<Function> eqOracle = new DFAWpMethodEQOracle<>(mqOracle, 2);
-        boolean done = false;
+
         learner.startLearning();
-        while (!done) {
-            // stable hypothesis after membership queries
+        while (true) {
             DFA<?, Function> hyp = learner.getHypothesisModel();
 
             // search for counterexample
@@ -46,33 +36,33 @@ public class Main {
             System.out.println("Counterexample: " + o);
 
             // no counter example -> learning is done
-            if (o == null) {
-                done = true;
-                continue;
-            }
+            if (o == null) break;
 
-            // return counter example to the learner, so that it can use
-            // it to generate new membership queries
+            // return counter example to the learner
             learner.refineHypothesis(o);
         }
 
+        return learner.getHypothesisModel();
+    }
 
+    private static void showResults(DFA<?, Function> dfa, Alphabet<Function> alphabet, String file) throws IOException {
         // report results
         System.out.println("-------------------------------------------------------");
-
-        // show model
         System.out.println();
         System.out.println("Model: ");
-        GraphDOT.write(learner.getHypothesisModel(), alphabet, new FileWriter("hyp.dot")); // may throw IOException!
+        GraphDOT.write(dfa, alphabet, new FileWriter(file+".dot"));
 
-        Visualization.visualize(learner.getHypothesisModel(), alphabet);
+        Visualization.visualize(dfa, alphabet);
 
-        System.out.println("-------------------------------------------------------");
+    }
 
-        System.out.println("Final observation table:");
-        new ObservationTableASCIIWriter<>().write(learner.getObservationTable(), System.out);
+    public static void main(String[] args) throws IOException {
+        Alphabet<Function> alphabet = new GrowingMapAlphabet<>();
+        alphabet.addAll(Arrays.asList(Function.values()));
 
-        OTUtils.displayHTMLInBrowser(learner.getObservationTable());
+        showResults(learn(new ExceptionIterOracle(), alphabet), alphabet, "exception");
+        showResults(learn(new BooleanIterOracle(), alphabet), alphabet, "boolean");
+
     }
 
 }
