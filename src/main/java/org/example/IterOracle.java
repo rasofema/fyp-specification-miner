@@ -10,7 +10,8 @@ import java.util.*;
 enum Function {
     hasNextTrue,
     hasNextFalse,
-    next
+    next,
+    remove
 };
 
 public class IterOracle implements SingleQueryOracleDFA<Function> {
@@ -39,6 +40,13 @@ public class IterOracle implements SingleQueryOracleDFA<Function> {
             case next -> {
                 try {
                     this.iter.next();
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+            case remove -> {
+                try {
+                    this.iter.remove();
                 } catch (Exception e) {
                     return false;
                 }
