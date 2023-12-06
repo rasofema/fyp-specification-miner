@@ -3,7 +3,8 @@ digraph g {
 	s0 [shape="doublecircle" label="0"];
 	s1 [shape="circle" label="1"];
 	s2 [shape="doublecircle" label="2"];
-	s0 -> s2 [label="hasNextTrue"];
+	s3 [shape="doublecircle" label="3"];
+	s0 -> s3 [label="hasNextTrue"];
 	s0 -> s0 [label="hasNextFalse"];
 	s0 -> s1 [label="next"];
 	s0 -> s1 [label="remove"];
@@ -11,10 +12,14 @@ digraph g {
 	s1 -> s1 [label="hasNextFalse"];
 	s1 -> s1 [label="next"];
 	s1 -> s1 [label="remove"];
-	s2 -> s2 [label="hasNextTrue"];
-	s2 -> s0 [label="hasNextFalse"];
-	s2 -> s0 [label="next"];
-	s2 -> s1 [label="remove"];
+	s2 -> s3 [label="hasNextTrue"];
+	s2 -> s2 [label="hasNextFalse"];
+	s2 -> s1 [label="next"];
+	s2 -> s0 [label="remove"];
+	s3 -> s3 [label="hasNextTrue"];
+	s3 -> s2 [label="hasNextFalse"];
+	s3 -> s2 [label="next"];
+	s3 -> s1 [label="remove"];
 
 __start0 [label="" shape="none" width="0" height="0"];
 __start0 -> s0;

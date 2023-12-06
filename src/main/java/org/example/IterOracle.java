@@ -6,6 +6,7 @@ import net.automatalib.word.Word;
 
 
 import java.util.*;
+import java.util.stream.Stream;
 
 enum Function {
     hasNextTrue,
@@ -28,7 +29,9 @@ public class IterOracle implements SingleQueryOracleDFA<Function> {
         switch (function) {
             case hasNextTrue -> {
                 if (!this.iter.hasNext()) {
-                    this.iter = Collections.singletonList(null).iterator();
+                    ArrayList<Object> list = new ArrayList<>();
+                    list.add(null);
+                    this.iter = list.iterator();
                     if (!this.iter.hasNext()) throw new RuntimeException("Iterator should have next");
                 }
             }
@@ -47,8 +50,10 @@ public class IterOracle implements SingleQueryOracleDFA<Function> {
             case remove -> {
                 try {
                     this.iter.remove();
-                } catch (Exception e) {
+                } catch (IllegalStateException e) {
                     return false;
+                } catch (UnsupportedOperationException e) {
+                    throw new RuntimeException("Iterator should support operation");
                 }
             }
         }
