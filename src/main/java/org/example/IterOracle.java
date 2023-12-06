@@ -6,46 +6,53 @@ import net.automatalib.word.Word;
 
 
 import java.util.*;
-import java.util.stream.Stream;
 
 enum Function {
     hasNextTrue,
     hasNextFalse,
     next,
-    remove
+    remove,
+    add
 };
 
 public class IterOracle implements SingleQueryOracleDFA<Function> {
+
+    private static final int BOUND = 2;
+    private int iterPosition;
+    private ExceptionBoundedList<Object> list;
     private Iterator<Object> iter;
     public IterOracle() {
         reset();
     }
 
     private void reset() {
-        this.iter = Collections.emptyIterator();
+        this.iterPosition = 0;
+        this.list = new ExceptionBoundedList<>(BOUND);
+        this.iter = this.list.iterator();
+    }
+
+    private void updateIterState() {
+        this.iter = this.list.iterator();
+        for (int i = 0; i < this.iterPosition; i++) {
+            this.iter.next();
+        }
     }
 
     private Boolean step(Function function) {
         switch (function) {
             case hasNextTrue -> {
-                if (!this.iter.hasNext()) {
-                    ArrayList<Object> list = new ArrayList<>();
-                    list.add(null);
-                    this.iter = list.iterator();
-                    if (!this.iter.hasNext()) throw new RuntimeException("Iterator should have next");
-                }
+                return this.iter.hasNext();
             }
             case hasNextFalse -> {
-                while (this.iter.hasNext()) {
-                    this.iter.next();
-                }
+                return !this.iter.hasNext();
             }
             case next -> {
                 try {
                     this.iter.next();
-                } catch (Exception e) {
+                } catch (NoSuchElementException e) {
                     return false;
                 }
+                this.iterPosition++;
             }
             case remove -> {
                 try {
@@ -55,6 +62,15 @@ public class IterOracle implements SingleQueryOracleDFA<Function> {
                 } catch (UnsupportedOperationException e) {
                     throw new RuntimeException("Iterator should support operation");
                 }
+                this.iterPosition--;
+            }
+            case add -> {
+                try {
+                    this.list.add(null);
+                } catch (OutOfMemoryError e) {
+                    return false;
+                }
+                updateIterState();
             }
         }
         return true;
