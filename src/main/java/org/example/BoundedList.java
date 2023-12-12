@@ -3,11 +3,11 @@ package org.example;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class BooleanBoundedList<T> implements Iterable<T> {
+public class BoundedList<T> implements Iterable<T> {
     private final ArrayList<T> list;
     private final int bound;
 
-    public BooleanBoundedList(int bound) {
+    public BoundedList(int bound) {
         if (bound <= 0) {
             throw new IllegalArgumentException("Illegal bound: " + bound);
         }
@@ -15,12 +15,11 @@ public class BooleanBoundedList<T> implements Iterable<T> {
         this.bound = bound;
     }
 
-    public boolean add(T elem) {
+    public void add(T elem) {
         if (list.size() >= bound) {
-            return false;
+            throw new OutOfMemoryError("No more space in the array");
         }
         list.add(elem);
-        return true;
     }
 
     @Override

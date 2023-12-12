@@ -7,19 +7,24 @@ import net.automatalib.word.Word;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class BooleanIterOracle implements SingleQueryOracleDFA<Function> {
+public class IterOracle implements SingleQueryOracleDFA<Function> {
 
     private static final int BOUND = 1;
     private int iterPosition;
-    private BooleanBoundedList<Object> list;
+    private BoundedList<Object> list;
     private Iterator<Object> iter;
-    public BooleanIterOracle() {
+    private boolean silentFailAdd = false;
+    public void setSilentFailAddTrue() {
+        this.silentFailAdd = true;
+    }
+
+    public IterOracle() {
         reset();
     }
 
     private void reset() {
         this.iterPosition = 0;
-        this.list = new BooleanBoundedList<>(BOUND);
+        this.list = new BoundedList<>(BOUND);
         this.iter = this.list.iterator();
     }
 
@@ -57,9 +62,12 @@ public class BooleanIterOracle implements SingleQueryOracleDFA<Function> {
                 this.iterPosition--;
             }
             case add -> {
-                boolean res = this.list.add(null);
+                try {
+                    this.list.add(null);
+                } catch (OutOfMemoryError e) {
+                    return this.silentFailAdd;  // true if silent fail, false otherwise
+                }
                 updateIterState();
-                return res;
             }
         }
         return true;
@@ -68,7 +76,6 @@ public class BooleanIterOracle implements SingleQueryOracleDFA<Function> {
     @Override
     public Boolean answerQuery(Word<Function> prefix, Word<Function> suffix) {
         reset();
-        System.out.println(prefix.concat(suffix));
         return prefix.concat(suffix).stream()
                 .allMatch(this::step);
     }

@@ -18,12 +18,12 @@ digraph g {
 	s2 -> s1 [label="hasNextFalse"];
 	s2 -> s3 [label="next"];
 	s2 -> s1 [label="remove"];
-	s2 -> s1 [label="add"];
+	s2 -> s2 [label="add"];
 	s3 -> s1 [label="hasNextTrue"];
 	s3 -> s3 [label="hasNextFalse"];
 	s3 -> s1 [label="next"];
 	s3 -> s0 [label="remove"];
-	s3 -> s1 [label="add"];
+	s3 -> s3 [label="add"];
 
 __start0 [label="" shape="none" width="0" height="0"];
 __start0 -> s0;

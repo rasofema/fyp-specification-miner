@@ -60,8 +60,11 @@ public class Main {
         Alphabet<Function> alphabet = new GrowingMapAlphabet<>();
         alphabet.addAll(Arrays.asList(Function.values()));
 
-        showResults(learn(new ExceptionIterOracle(), alphabet), alphabet, "exception");
-        showResults(learn(new BooleanIterOracle(), alphabet), alphabet, "boolean");
+        showResults(learn(new IterOracle(), alphabet), alphabet, "exception");
+
+        final IterOracle iterOracle = new IterOracle();
+        iterOracle.setSilentFailAddTrue();
+        showResults(learn(iterOracle, alphabet), alphabet, "silent");
 
     }
 
