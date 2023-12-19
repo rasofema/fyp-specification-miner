@@ -1,4 +1,4 @@
-package org.example;
+package org.example.model;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,7 +15,6 @@ import net.automatalib.automaton.fsa.DFA;
 import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.visualization.Visualization;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
 
 public class Main {
 
