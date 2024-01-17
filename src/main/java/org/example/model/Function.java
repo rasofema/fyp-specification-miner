@@ -1,6 +1,6 @@
 package org.example.model;
 
-enum Function {
+public enum Function {
     hasNextTrue,
     hasNextFalse,
     next,
