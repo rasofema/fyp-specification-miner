@@ -1,13 +1,16 @@
 package org.example.model;
 
 
-import de.learnlib.api.oracle.SingleQueryOracle.SingleQueryOracleDFA;
-import net.automatalib.words.Word;
+import de.learnlib.api.oracle.MembershipOracle;
+import de.learnlib.api.query.Query;
+import de.learnlib.ralib.words.PSymbolInstance;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 
-public class IterOracle implements SingleQueryOracleDFA<Function> {
+public class IterOracle implements MembershipOracle.DFAMembershipOracle<PSymbolInstance> {
 
+    private Functions functions = new Functions();
     private boolean silentFailAdd = false;
     public void setSilentFailAddTrue() {
         this.silentFailAdd = true;
@@ -19,8 +22,9 @@ public class IterOracle implements SingleQueryOracleDFA<Function> {
         this.iterator = new BoundedIterator<>();
     }
 
-    private Boolean step(Function function) {
-        switch (function) {
+    private Boolean step(PSymbolInstance function) {
+
+        switch (functions.getFunction(function)) {
             case hasNextTrue -> {
                 return this.iterator.hasNext();
             }
@@ -55,9 +59,21 @@ public class IterOracle implements SingleQueryOracleDFA<Function> {
     }
 
     @Override
-    public Boolean answerQuery(Word<Function> prefix, Word<Function> suffix) {
+    public void processQuery(Query<PSymbolInstance, Boolean> query) {
         iterator.reset();
-        return prefix.concat(suffix).stream()
-                .allMatch(this::step);
+        for (PSymbolInstance input : query.getInput().asList()) {
+            if (!step(input)) {
+                query.answer(false);
+                return;
+            }
+        }
+        query.answer(true);
+    }
+
+    @Override
+    public void processQueries(Collection<? extends Query<PSymbolInstance, Boolean>> collection) {
+        for (Query<PSymbolInstance, Boolean> query : collection) {
+            processQuery(query);
+        }
     }
 }

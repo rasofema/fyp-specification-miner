@@ -1,14 +1,12 @@
 package org.example.view;
 
+import de.learnlib.ralib.words.PSymbolInstance;
 import org.example.controller.Controller;
-import org.example.model.Function;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -31,7 +29,7 @@ public class MainPanel extends JPanel {
         this.img = new JLabel(new ImageIcon("out.png"));
         this.wordsPanel = new JPanel(new WrapLayout());
         this.words = new ArrayList<>();
-        this.comboBox = new JComboBox<>(new Vector<>(app.getAlphabet().stream().map(Enum::toString).toList()));
+        this.comboBox = new JComboBox<>(new Vector<>(app.getAlphabet().stream().map(PSymbolInstance::toString).toList()));
         this.counterexampleTrue = new JButton("True");
         this.counterexampleTrue.setBackground(Color.green);
         this.counterexampleTrue.setOpaque(true);

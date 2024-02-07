@@ -2,6 +2,9 @@ package org.example.controller;
 
 import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
+import de.learnlib.oracle.equivalence.DFARandomWMethodEQOracle;
+import de.learnlib.oracle.equivalence.RandomWordsEQOracle;
+import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
 import de.learnlib.ralib.automata.RegisterAutomaton;
 import de.learnlib.ralib.data.Constants;
 import de.learnlib.ralib.data.DataType;
@@ -23,7 +26,6 @@ import de.learnlib.ralib.tools.theories.IntegerEqualityTheory;
 import de.learnlib.ralib.words.InputSymbol;
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
-//import org.example.model.IterRAOracle;
 import org.example.rahelper.RandomWalk;
 
 import java.io.File;
@@ -34,10 +36,8 @@ import java.util.Random;
 
 public class Runner {
 
-    /*public static final InputSymbol ADD = new InputSymbol("add", new DataType[]{doubleType});
-    public static final InputSymbol NEXT = new InputSymbol("next", new DataType[]{doubleType});
 
-    private Hypothesis ralib_learn() {
+    /*private Hypothesis ralib_learn() {
         Map<DataType, Theory> teachers = new LinkedHashMap<>();
         DataType dataType = new DataType("INTEGER", Integer.class);
         teachers.put(dataType, new IntegerEqualityTheory(dataType));
@@ -53,11 +53,12 @@ public class Runner {
             SDTLogicOracle slo = new MultiTheorySDTLogicOracle(consts, solver);
 
             TreeOracleFactory hypFactory = (RegisterAutomaton hyp) ->
-                    new MultiTheoryTreeOracle(..., teachers,
+                    new MultiTheoryTreeOracle(dwOracle, teachers,
                             new Constants(), solver);
 
-            RaLearningAlgorithm learner = new RaStar(mto, hypFactory, slo, consts, I_PUSH, I_POP);
+            RaLearningAlgorithm learner = new RaStar(mto, hypFactory, slo, consts, false, I_PUSH, I_POP);
             DefaultQuery<PSymbolInstance, Boolean> ce = null;
+
             IOEquivalenceOracle eqOracle = new RandomWalk(random, ioCache,
                     0.1, // reset probability
                     0.8, // prob. of choosing a fresh data value
@@ -65,7 +66,8 @@ public class Runner {
                     6, // max depth
                     teachers,
                     consts, Arrays.asList(I_PUSH, I_POP));
-
+//            Use instead
+            RandomWordsEQOracle
 
             int check = 0;
             while (check < 100) {
@@ -91,19 +93,19 @@ public class Runner {
 
     }*/
 
-    private static void ralib_learn() {
+    /*private static void ralib_learn() {
         ClassAnalyzer analyzer = new ClassAnalyzer();
         try {
             analyzer.setup(new Configuration(new File("config")));
             analyzer.run();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e);⁄
         }
-    }
+    }*/
 
     public static void main(String[] args) {
         Controller app = new Controller();
         app.start();
-        ralib_learn();
+//        ralib_learn();
     }
 }

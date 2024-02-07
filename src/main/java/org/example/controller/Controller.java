@@ -5,50 +5,47 @@ import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFABuilder;
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.oracle.equivalence.DFAWpMethodEQOracle;
 import de.learnlib.api.query.DefaultQuery;
+import de.learnlib.ralib.words.PSymbolInstance;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import net.automatalib.words.Alphabet;
-import net.automatalib.words.impl.GrowingMapAlphabet;
 import net.automatalib.automata.fsa.DFA;
 import net.automatalib.serialization.dot.GraphDOT;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.example.model.Function;
+import org.example.model.Functions;
 import org.example.model.IterOracle;
-import org.example.view.MainFrame;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Controller {
 
-    private final Alphabet<Function> alphabet;
+    private final Alphabet<PSymbolInstance> alphabet;
     //private final MainFrame frame;
     public Controller() {
-        this.alphabet = new GrowingMapAlphabet<>();
-        this.alphabet.addAll(Arrays.asList(Function.values()));
+        this.alphabet = new Functions().getAlphabet();
         //this.frame = new MainFrame(this);
     }
 
-    public Alphabet<Function> getAlphabet() {
+    public Alphabet<PSymbolInstance> getAlphabet() {
         return alphabet;
     }
 
-    private DFA<?, Function> learn(MembershipOracle.DFAMembershipOracle<Function> mqOracle) {
+    private DFA<?, PSymbolInstance> learn(MembershipOracle.DFAMembershipOracle<PSymbolInstance> mqOracle) {
         // construct L* instance
-        ClassicLStarDFA<Function> learner =
-                new ClassicLStarDFABuilder<Function>().withAlphabet(alphabet) // input alphabet
+        ClassicLStarDFA<PSymbolInstance> learner =
+                new ClassicLStarDFABuilder<PSymbolInstance>().withAlphabet(alphabet) // input alphabet
                         .withOracle(mqOracle) // membership oracle
                         .create();
-        DFAWpMethodEQOracle<Function> eqOracle = new DFAWpMethodEQOracle<>(mqOracle, 2);
+        DFAWpMethodEQOracle<PSymbolInstance> eqOracle = new DFAWpMethodEQOracle<>(mqOracle, 2);
 
         learner.startLearning();
         while (true) {
-            DFA<?, Function> hyp = learner.getHypothesisModel();
+            DFA<?, PSymbolInstance> hyp = learner.getHypothesisModel();
 
             // search for counterexample
-            @Nullable DefaultQuery<Function, Boolean> o = eqOracle.findCounterExample(hyp, alphabet);
+            @Nullable DefaultQuery<PSymbolInstance, Boolean> o = eqOracle.findCounterExample(hyp, alphabet);
             System.out.println("Counterexample: " + o);
 
             // no counter example -> learning is done
@@ -61,7 +58,7 @@ public class Controller {
         return learner.getHypothesisModel();
     }
 
-    private void showResults(DFA<?, Function> dfa, String file) {
+    private void showResults(DFA<?, PSymbolInstance> dfa, String file) {
         // report results
         System.out.println("-------------------------------------------------------");
         System.out.println();
@@ -79,7 +76,7 @@ public class Controller {
     public void start() {
         showResults(learn(new IterOracle()), "exception");
 
-        //final IterOracle iterOracle = new IterOracle();
+        final IterOracle iterOracle = new IterOracle();
         //iterOracle.setSilentFailAddTrue();
         //showResults(learn(iterOracle), "silent");
 
