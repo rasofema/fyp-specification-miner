@@ -1,10 +1,6 @@
 package org.example.controller;
 
-import de.learnlib.api.oracle.EquivalenceOracle;
 import de.learnlib.api.query.DefaultQuery;
-import de.learnlib.oracle.equivalence.DFARandomWMethodEQOracle;
-import de.learnlib.oracle.equivalence.RandomWordsEQOracle;
-import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
 import de.learnlib.ralib.automata.RegisterAutomaton;
 import de.learnlib.ralib.data.Constants;
 import de.learnlib.ralib.data.DataType;
@@ -14,21 +10,27 @@ import de.learnlib.ralib.learning.ralambda.RaLambda;
 import de.learnlib.ralib.learning.rastar.RaStar;
 import de.learnlib.ralib.oracles.DataWordOracle;
 import de.learnlib.ralib.oracles.SDTLogicOracle;
+import de.learnlib.ralib.oracles.TreeOracle;
 import de.learnlib.ralib.oracles.TreeOracleFactory;
 import de.learnlib.ralib.oracles.mto.MultiTheorySDTLogicOracle;
 import de.learnlib.ralib.oracles.mto.MultiTheoryTreeOracle;
 import de.learnlib.ralib.solver.ConstraintSolver;
 import de.learnlib.ralib.solver.simple.SimpleConstraintSolver;
 import de.learnlib.ralib.theory.Theory;
-import de.learnlib.ralib.tools.ClassAnalyzer;
-import de.learnlib.ralib.tools.config.Configuration;
 import de.learnlib.ralib.tools.theories.IntegerEqualityTheory;
-import de.learnlib.ralib.words.InputSymbol;
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.engine.Graphviz;
+import net.automatalib.automata.Automaton;
+import net.automatalib.serialization.dot.GraphDOT;
+import org.example.model.Functions;
+import org.example.model.IterOracle;
 import org.example.rahelper.RandomWalk;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,62 +38,66 @@ import java.util.Random;
 
 public class Runner {
 
+    private static Hypothesis ralib_learn() {
+        PSymbolInstance[] array = new Functions().getArray();
+        ParameterizedSymbol[] functions = new ParameterizedSymbol[array.length];
+        for (int i=0; i<array.length; i++) {
+            functions[i] = array[i].getBaseSymbol();
+        }
 
-    /*private Hypothesis ralib_learn() {
+
         Map<DataType, Theory> teachers = new LinkedHashMap<>();
         DataType dataType = new DataType("INTEGER", Integer.class);
         teachers.put(dataType, new IntegerEqualityTheory(dataType));
         ConstraintSolver solver = new SimpleConstraintSolver();
         Constants consts = new Constants();
-        try {
-            DataWordOracle dwOracle = new IterRAOracle();
-            Measurements mes = new Measurements();
+        DataWordOracle dwOracle = new IterOracle();
+        Measurements mes = new Measurements();
 
-            MeasuringOracle mto = new MeasuringOracle(new MultiTheoryTreeOracle(
-                    dwOracle, teachers, consts, solver), mes);
+        TreeOracle mto = new MeasuringOracle(new MultiTheoryTreeOracle(
+                dwOracle, teachers, consts, solver), mes);
 
-            SDTLogicOracle slo = new MultiTheorySDTLogicOracle(consts, solver);
+        SDTLogicOracle slo = new MultiTheorySDTLogicOracle(consts, solver);
 
-            TreeOracleFactory hypFactory = (RegisterAutomaton hyp) ->
-                    new MultiTheoryTreeOracle(dwOracle, teachers,
-                            new Constants(), solver);
+        TreeOracleFactory hypFactory = (RegisterAutomaton hyp) ->
+                new MultiTheoryTreeOracle(dwOracle, teachers,
+                        consts, solver);
 
-            RaLearningAlgorithm learner = new RaStar(mto, hypFactory, slo, consts, false, I_PUSH, I_POP);
-            DefaultQuery<PSymbolInstance, Boolean> ce = null;
+        RaLearningAlgorithm learner = new RaLambda(mto, hypFactory, slo, consts, false, functions);
+        DefaultQuery<PSymbolInstance, Boolean> ce = null;
 
-            IOEquivalenceOracle eqOracle = new RandomWalk(random, ioCache,
-                    0.1, // reset probability
-                    0.8, // prob. of choosing a fresh data value
-                    10000, // number of runs
-                    6, // max depth
-                    teachers,
-                    consts, Arrays.asList(I_PUSH, I_POP));
-//            Use instead
-            RandomWordsEQOracle
+        /*IOEquivalenceOracle eqOracle = new RandomWordsEQOracle<RegisterAutomaton, PSymbolInstance, Boolean>
+                (dwOracle, 0, 50, 10000); -- could not use, does not implement right interface*/
+        IOEquivalenceOracle eqOracle = new RandomWalk(
+                new Random(1),
+                dwOracle,
+                10000,
+                teachers,
+                consts,
+                Arrays.stream(functions).toList());
 
-            int check = 0;
-            while (check < 100) {
-                check++;
-                learner.learn();
-                Hypothesis hyp = learner.getHypothesis();
-                ce = eqOracle.findCounterExample(hyp, null);
-                if (ce == null) {
-                    break;
-                }
-                if (ce.getOutput().equals(hyp.accepts(ce.getInput()))) {
-                    throw new RuntimeException("Should not accept");
-                }
-                learner.addCounterexample(ce);
-            }
 
+//      LEARN
+        int check = 0;
+        while (check < 100) {
+            check++;
+            learner.learn();
             Hypothesis hyp = learner.getHypothesis();
-
-            return hyp;
-        } catch (Exception e) {
-            throw new RuntimeException("Learning experiment failed: " + e);
+            ce = eqOracle.findCounterExample(hyp, null);
+            if (ce == null) {
+                break;
+            }
+            if (ce.getOutput().equals(hyp.accepts(ce.getInput()))) {
+                throw new RuntimeException("Should not accept");
+            }
+            learner.addCounterexample(ce);
         }
 
-    }*/
+        Hypothesis hyp = learner.getHypothesis();
+
+        return hyp;
+
+    }
 
     /*private static void ralib_learn() {
         ClassAnalyzer analyzer = new ClassAnalyzer();
@@ -104,8 +110,22 @@ public class Runner {
     }*/
 
     public static void main(String[] args) {
-        Controller app = new Controller();
-        app.start();
-//        ralib_learn();
+//        Controller app = new Controller();
+//        app.start();
+        Hypothesis hyp = ralib_learn();
+        System.out.println("-------------------------------------------------------");
+        System.out.println();
+        System.out.println("Model: ");
+        PSymbolInstance[] array = new Functions().getArray();
+        ParameterizedSymbol[] functions = new ParameterizedSymbol[array.length];
+        for (int i=0; i<array.length; i++) {
+            functions[i] = array[i].getBaseSymbol();
+        }
+        try {
+            GraphDOT.write(hyp, Arrays.stream(functions).toList(), new FileWriter("ralearn.dot"));
+            Graphviz.fromFile(new File("ralearn.dot")).render(Format.PNG).toFile(new File("ra-out.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

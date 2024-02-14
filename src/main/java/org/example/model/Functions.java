@@ -5,6 +5,7 @@ import de.learnlib.ralib.words.ParameterizedSymbol;
 import net.automatalib.words.Alphabet;
 import net.automatalib.words.impl.GrowingMapAlphabet;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -35,8 +36,12 @@ public class Functions {
 
     public Alphabet<PSymbolInstance> getAlphabet() {
         Alphabet<PSymbolInstance> alphabet = new GrowingMapAlphabet<>();
-        alphabet.addAll(map.keySet().stream().toList());
+        alphabet.addAll(Arrays.stream(getArray()).toList());
         return alphabet;
+    }
+
+    public PSymbolInstance[] getArray() {
+        return map.keySet().toArray(new PSymbolInstance[0]);
     }
 
 };

@@ -58,7 +58,7 @@ public class Controller {
         return learner.getHypothesisModel();
     }
 
-    private void showResults(DFA<?, PSymbolInstance> dfa, String file) {
+    public void showResults(DFA<?, PSymbolInstance> dfa, String file) {
         // report results
         System.out.println("-------------------------------------------------------");
         System.out.println();
@@ -74,7 +74,7 @@ public class Controller {
     }
 
     public void start() {
-        showResults(learn(new IterOracle()), "exception");
+//        showResults(learn(new IterOracle()), "exception");
 
         final IterOracle iterOracle = new IterOracle();
         //iterOracle.setSilentFailAddTrue();

@@ -3,12 +3,13 @@ package org.example.model;
 
 import de.learnlib.api.oracle.MembershipOracle;
 import de.learnlib.api.query.Query;
+import de.learnlib.ralib.oracles.DataWordOracle;
 import de.learnlib.ralib.words.PSymbolInstance;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-public class IterOracle implements MembershipOracle.DFAMembershipOracle<PSymbolInstance> {
+public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershipOracle<PSymbolInstance> {
 
     private Functions functions = new Functions();
     private boolean silentFailAdd = false;
