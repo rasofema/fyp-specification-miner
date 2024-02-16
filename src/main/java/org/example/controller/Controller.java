@@ -1,15 +1,15 @@
 package org.example.controller;
 
-import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFA;
-import de.learnlib.algorithms.lstar.dfa.ClassicLStarDFABuilder;
-import de.learnlib.api.oracle.MembershipOracle;
+import de.learnlib.algorithm.lstar.dfa.ClassicLStarDFA;
+import de.learnlib.algorithm.lstar.dfa.ClassicLStarDFABuilder;
+import de.learnlib.oracle.MembershipOracle;
 import de.learnlib.oracle.equivalence.DFAWpMethodEQOracle;
-import de.learnlib.api.query.DefaultQuery;
+import de.learnlib.query.DefaultQuery;
 import de.learnlib.ralib.words.PSymbolInstance;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import net.automatalib.words.Alphabet;
-import net.automatalib.automata.fsa.DFA;
+import net.automatalib.alphabet.Alphabet;
+import net.automatalib.automaton.fsa.DFA;
 import net.automatalib.serialization.dot.GraphDOT;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.example.model.Functions;

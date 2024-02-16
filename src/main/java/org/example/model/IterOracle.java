@@ -1,8 +1,8 @@
 package org.example.model;
 
 
-import de.learnlib.api.oracle.MembershipOracle;
-import de.learnlib.api.query.Query;
+import de.learnlib.oracle.MembershipOracle;
+import de.learnlib.query.Query;
 import de.learnlib.ralib.oracles.DataWordOracle;
 import de.learnlib.ralib.words.PSymbolInstance;
 
@@ -25,21 +25,24 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
 
     private Boolean step(PSymbolInstance function) {
 
-        switch (functions.getFunction(function)) {
-            case hasNextTrue -> {
+        switch (functions.getFunction(function.getBaseSymbol())) {
+            /*case hasNextTrue -> {
                 return this.iterator.hasNext();
             }
             case hasNextFalse -> {
                 return !this.iterator.hasNext();
-            }
+            }*/
             case next -> {
+                if (!function.getParameterValues()[0].getId().equals(0)) {
+                    return false;
+                }
                 try {
                     this.iterator.next();
                 } catch (NoSuchElementException e) {
                     return false;
                 }
             }
-            case remove -> {
+            /*case remove -> {
                 try {
                     this.iterator.remove();
                 } catch (IllegalStateException e) {
@@ -47,8 +50,14 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
                 } catch (UnsupportedOperationException e) {
                     throw new RuntimeException("Iterator should support operation");
                 }
-            }
+                if (!function.getParameterValues()[0].getId().equals(this.iterator.listSize())) {
+                    return false;
+                }
+            }*/
             case add -> {
+                if (!function.getParameterValues()[0].getId().equals(0) || this.iterator.tooFar()) {
+                    return false;
+                }
                 try {
                     this.iterator.add(null);
                 } catch (OutOfMemoryError e) {

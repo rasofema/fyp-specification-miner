@@ -1,17 +1,16 @@
 package org.example.controller;
 
-import de.learnlib.api.query.DefaultQuery;
+import de.learnlib.query.DefaultQuery;
 import de.learnlib.ralib.automata.RegisterAutomaton;
+import de.learnlib.ralib.automata.util.RAToDot;
 import de.learnlib.ralib.data.Constants;
 import de.learnlib.ralib.data.DataType;
+import de.learnlib.ralib.data.DataValue;
+import de.learnlib.ralib.data.SymbolicDataValue;
 import de.learnlib.ralib.equivalence.IOEquivalenceOracle;
 import de.learnlib.ralib.learning.*;
 import de.learnlib.ralib.learning.ralambda.RaLambda;
-import de.learnlib.ralib.learning.rastar.RaStar;
-import de.learnlib.ralib.oracles.DataWordOracle;
-import de.learnlib.ralib.oracles.SDTLogicOracle;
-import de.learnlib.ralib.oracles.TreeOracle;
-import de.learnlib.ralib.oracles.TreeOracleFactory;
+import de.learnlib.ralib.oracles.*;
 import de.learnlib.ralib.oracles.mto.MultiTheorySDTLogicOracle;
 import de.learnlib.ralib.oracles.mto.MultiTheoryTreeOracle;
 import de.learnlib.ralib.solver.ConstraintSolver;
@@ -22,19 +21,14 @@ import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import net.automatalib.automata.Automaton;
 import net.automatalib.serialization.dot.GraphDOT;
 import org.example.model.Functions;
 import org.example.model.IterOracle;
 import org.example.rahelper.RandomWalk;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Random;
+import java.io.*;
+import java.util.*;
+
 
 public class Runner {
 
@@ -47,10 +41,11 @@ public class Runner {
 
 
         Map<DataType, Theory> teachers = new LinkedHashMap<>();
-        DataType dataType = new DataType("INTEGER", Integer.class);
+        DataType dataType = new DataType("INT", Integer.class);
         teachers.put(dataType, new IntegerEqualityTheory(dataType));
         ConstraintSolver solver = new SimpleConstraintSolver();
         Constants consts = new Constants();
+        consts.put(new SymbolicDataValue.Constant(dataType, 0), new DataValue<>(dataType, 0));
         DataWordOracle dwOracle = new IterOracle();
         Measurements mes = new Measurements();
 
@@ -60,7 +55,7 @@ public class Runner {
         SDTLogicOracle slo = new MultiTheorySDTLogicOracle(consts, solver);
 
         TreeOracleFactory hypFactory = (RegisterAutomaton hyp) ->
-                new MultiTheoryTreeOracle(dwOracle, teachers,
+                new MultiTheoryTreeOracle(new SimulatorOracle(hyp), teachers,
                         consts, solver);
 
         RaLearningAlgorithm learner = new RaLambda(mto, hypFactory, slo, consts, false, functions);
@@ -87,9 +82,6 @@ public class Runner {
             if (ce == null) {
                 break;
             }
-            if (ce.getOutput().equals(hyp.accepts(ce.getInput()))) {
-                throw new RuntimeException("Should not accept");
-            }
             learner.addCounterexample(ce);
         }
 
@@ -99,31 +91,18 @@ public class Runner {
 
     }
 
-    /*private static void ralib_learn() {
-        ClassAnalyzer analyzer = new ClassAnalyzer();
-        try {
-            analyzer.setup(new Configuration(new File("config")));
-            analyzer.run();
-        } catch (Exception e) {
-            throw new RuntimeException(e);⁄
-        }
-    }*/
-
     public static void main(String[] args) {
 //        Controller app = new Controller();
 //        app.start();
         Hypothesis hyp = ralib_learn();
-        System.out.println("-------------------------------------------------------");
-        System.out.println();
-        System.out.println("Model: ");
-        PSymbolInstance[] array = new Functions().getArray();
-        ParameterizedSymbol[] functions = new ParameterizedSymbol[array.length];
-        for (int i=0; i<array.length; i++) {
-            functions[i] = array[i].getBaseSymbol();
-        }
+        String hypString = new RAToDot(hyp, false).toString();   // TODO: test with true
+        System.out.println(hypString);
         try {
-            GraphDOT.write(hyp, Arrays.stream(functions).toList(), new FileWriter("ralearn.dot"));
-            Graphviz.fromFile(new File("ralearn.dot")).render(Format.PNG).toFile(new File("ra-out.png"));
+            FileWriter writer = new FileWriter("ralearn.dot");
+            writer.write(hypString);
+            writer.close();
+
+            Graphviz.fromString(hypString).render(Format.PNG).toFile(new File("ra-out.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

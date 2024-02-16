@@ -9,9 +9,12 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <learnlib.version>0.17.0</learnlib.version>
+        <automatalib.version>0.11.0</automatalib.version>
     </properties>
 
     <dependencies>
@@ -28,27 +31,27 @@
         <dependency>
             <groupId>de.learnlib</groupId>
             <artifactId>learnlib-lstar</artifactId>
-            <version>0.16.0</version>
+            <version>${learnlib.version}</version>
         </dependency>
         <dependency>
             <groupId>de.learnlib</groupId>
             <artifactId>learnlib-membership-oracles</artifactId>
-            <version>0.16.0</version>
+            <version>${learnlib.version}</version>
         </dependency>
         <dependency>
             <groupId>de.learnlib</groupId>
             <artifactId>learnlib-equivalence-oracles</artifactId>
-            <version>0.16.0</version>
+            <version>${learnlib.version}</version>
         </dependency>
         <dependency>
             <groupId>net.automatalib</groupId>
             <artifactId>automata-serialization-dot</artifactId>
-            <version>0.10.0</version>
+            <version>${automatalib.version}</version>
         </dependency>
         <dependency>
             <groupId>net.automatalib</groupId>
             <artifactId>automata-dot-visualizer</artifactId>
-            <version>0.10.0</version>
+            <version>${automatalib.version}</version>
         </dependency>
         <dependency>
             <groupId>guru.nidi</groupId>
