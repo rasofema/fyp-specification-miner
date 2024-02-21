@@ -24,7 +24,8 @@ public class Functions {
 //        hasNextFalse,
         next,
 //        remove,
-        add
+        add,
+        init
     }
     public Functions() {
         for (Function f : Function.values()) {
@@ -46,7 +47,6 @@ public class Functions {
     }
 
     public PSymbolInstance[] getArray() {
-        System.out.println(map.values());
         return map.keySet().toArray(new PSymbolInstance[0]);
     }
 

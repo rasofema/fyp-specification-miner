@@ -1,0 +1,12 @@
+digraph RA {
+"" [shape=none,label=<>]
+"l0" [shape=doublecircle]
+"l1" [shape=doublecircle]
+"l2" [shape=doublecircle]
+"" -> "l0"
+"l0" -> "l1" [label=<?init[int]|(c0==p1)<BR />[r2:=p1,r3:=p1,]>]
+"l1" -> "l2" [label=<?add[int]|(c1==p1)<BR />[r1:=p1,]>]
+"l2" -> "l2" [label=<?add[int]|(c0==r3) &amp;&amp; (c1==p1)<BR />[r3:=r2,r2:=r1,r1:=p1,]>]
+"l2" -> "l2" [label=<?next[int]|(c1==r2) &amp;&amp; (c0==p1)<BR />[r1:=r2,r2:=r3,r3:=p1,]>]
+"l2" -> "l1" [label=<?next[int]|(p1==r2) &amp;&amp; (c0==p1)<BR />[r1:=r2,]>]
+}

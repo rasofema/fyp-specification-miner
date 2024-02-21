@@ -3,7 +3,7 @@ package org.example.model;
 import java.util.Iterator;
 
 public class BoundedIterator<E> {
-    private static final int BOUND = 3000;
+    private static final int BOUND = 2;
     private int position;
     private BoundedList<E> list;
     private Iterator<E> iter;
@@ -49,7 +49,7 @@ public class BoundedIterator<E> {
     }
 
     public boolean tooFar() {
-        return this.list.size() - this.position > 1;
+        return this.list.size() - this.position > 5;
     }
 
     public int listSize() {

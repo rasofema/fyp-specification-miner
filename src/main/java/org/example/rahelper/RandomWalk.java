@@ -31,8 +31,8 @@ public class RandomWalk implements IOEquivalenceOracle  {
 	private Random rand;
 	private long maxRuns;
 	private int depth = 10;
-	private double resetProbability = 0.1;
-	private double freshProbability = 0.5;
+	private double resetProbability = 0.05;
+	private double freshProbability = 0.2;
 	private List<ParameterizedSymbol> symbols;
 	private DataWordOracle wordOracle;
 	private Constants consts;

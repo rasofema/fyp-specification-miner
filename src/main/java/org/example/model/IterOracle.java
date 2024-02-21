@@ -5,9 +5,12 @@ import de.learnlib.oracle.MembershipOracle;
 import de.learnlib.query.Query;
 import de.learnlib.ralib.oracles.DataWordOracle;
 import de.learnlib.ralib.words.PSymbolInstance;
+import de.learnlib.ralib.words.ParameterizedSymbol;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
+
+import static org.example.model.Functions.Function.init;
 
 public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershipOracle<PSymbolInstance> {
 
@@ -32,6 +35,9 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
             case hasNextFalse -> {
                 return !this.iterator.hasNext();
             }*/
+            case init -> {
+                return false;
+            }
             case next -> {
                 if (!function.getParameterValues()[0].getId().equals(0)) {
                     return false;
@@ -55,7 +61,7 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
                 }
             }*/
             case add -> {
-                if (!function.getParameterValues()[0].getId().equals(0) || this.iterator.tooFar()) {
+                if (!function.getParameterValues()[0].getId().equals(1) || this.iterator.tooFar()) {
                     return false;
                 }
                 try {
@@ -71,7 +77,17 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
     @Override
     public void processQuery(Query<PSymbolInstance, Boolean> query) {
         iterator.reset();
-        for (PSymbolInstance input : query.getInput().asList()) {
+        if (query.getInput().length() == 0) {
+            query.answer(true);
+            return;
+        }
+
+        PSymbolInstance function = query.getInput().asList().get(0);
+        if (!functions.getFunction(function.getBaseSymbol()).equals(init) || !function.getParameterValues()[0].getId().equals(0)) {
+            query.answer(false);
+            return;
+        }
+        for (PSymbolInstance input : query.getInput().asList().subList(1, query.getInput().length())) {
             if (!step(input)) {
                 query.answer(false);
                 return;
