@@ -1,4 +1,4 @@
-package org.example.rahelper;
+package org.example.helper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import de.learnlib.oracle.equivalence.AbstractTestWordEQOracle;
 import de.learnlib.query.DefaultQuery;
 import de.learnlib.ralib.automata.RegisterAutomaton;
 import de.learnlib.ralib.data.Constants;
@@ -25,7 +27,7 @@ import net.automatalib.word.WordBuilder;
 /**
  * RandomWalk equivalence oracle for DataWordOracle
  */
-public class RandomWalk implements IOEquivalenceOracle  {
+public class RandomWalk extends AbstractTestWordEQOracle<RegisterAutomaton, PSymbolInstance, Boolean> implements IOEquivalenceOracle {
 
 	private Map<DataType, Theory> teachers;
 	private Random rand;
@@ -40,6 +42,7 @@ public class RandomWalk implements IOEquivalenceOracle  {
 	public RandomWalk(Random rand, DataWordOracle membershipOracle, long maxRuns,
 			Map<DataType, Theory> teachers, Constants consts,
 			List<ParameterizedSymbol> symbols) {
+		super(membershipOracle);
 		this.rand = rand;
 		this.maxRuns = maxRuns;
 		this.wordOracle = membershipOracle;
@@ -62,6 +65,11 @@ public class RandomWalk implements IOEquivalenceOracle  {
 		}
 
 		return null;
+	}
+
+	@Override
+	public Stream<Word<PSymbolInstance>> generateTestWords(RegisterAutomaton raLocations, Collection<? extends PSymbolInstance> collection) {
+		return Stream.generate(() -> this.generateRandomWord(symbols)).limit(maxRuns);
 	}
 
 	public Word<PSymbolInstance> generateRandomWord(List<ParameterizedSymbol> symbols) {

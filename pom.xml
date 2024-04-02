@@ -13,21 +13,12 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <learnlib.version>0.17.0</learnlib.version>
-        <automatalib.version>0.11.0</automatalib.version>
+        <learnlib.version>0.18.0-SNAPSHOT</learnlib.version>
+        <automatalib.version>0.12.0-SNAPSHOT</automatalib.version>
     </properties>
 
+
     <dependencies>
-        <dependency>
-            <groupId>org.openjdk.jmc</groupId>
-            <artifactId>common</artifactId>
-            <version>8.3.1</version>
-        </dependency>
-        <!--<dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
-        </dependency>-->
         <dependency>
             <groupId>de.learnlib</groupId>
             <artifactId>learnlib-lstar</artifactId>
@@ -36,6 +27,11 @@
         <dependency>
             <groupId>de.learnlib</groupId>
             <artifactId>learnlib-membership-oracles</artifactId>
+            <version>${learnlib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.learnlib</groupId>
+            <artifactId>learnlib-c3al</artifactId>
             <version>${learnlib.version}</version>
         </dependency>
         <dependency>
@@ -54,6 +50,16 @@
             <version>${automatalib.version}</version>
         </dependency>
         <dependency>
+            <groupId>net.automatalib</groupId>
+            <artifactId>automata-core</artifactId>
+            <version>${automatalib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.automatalib</groupId>
+            <artifactId>automata-commons-util</artifactId>
+            <version>${automatalib.version}</version>
+        </dependency>
+        <dependency>
             <groupId>guru.nidi</groupId>
             <artifactId>graphviz-java</artifactId>
             <version>0.18.1</version>
@@ -64,5 +70,4 @@
             <version>0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
 </project>

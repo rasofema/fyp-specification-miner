@@ -23,4 +23,8 @@ public class MainFrame extends JFrame {
         this.setTitle("SpecificationMiner");
         this.setVisible(true);
     }
+
+    public void updateImage(String img) {
+        this.panel.updateImage(img);
+    }
 }

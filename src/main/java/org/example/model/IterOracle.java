@@ -10,7 +10,6 @@ import de.learnlib.ralib.words.ParameterizedSymbol;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-import static org.example.model.Functions.Function.init;
 
 public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershipOracle<PSymbolInstance> {
 
@@ -23,32 +22,32 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
     private final BoundedIterator<Object> iterator;
 
     public IterOracle() {
-        this.iterator = new BoundedIterator<>();
+        this.iterator = new BoundedIterator<>(1);
     }
 
     private Boolean step(PSymbolInstance function) {
+        if (function.getParameterValues().length > 0 && !function.getParameterValues()[0].getId().equals(0)) {
+            return false;
+        }
 
         switch (functions.getFunction(function.getBaseSymbol())) {
-            /*case hasNextTrue -> {
+            case hasNextTrue -> {
                 return this.iterator.hasNext();
             }
             case hasNextFalse -> {
                 return !this.iterator.hasNext();
-            }*/
-            case init -> {
-                return false;
             }
+            /*case init -> {
+                return false;
+            }*/
             case next -> {
-                if (!function.getParameterValues()[0].getId().equals(0)) {
-                    return false;
-                }
                 try {
                     this.iterator.next();
                 } catch (NoSuchElementException e) {
                     return false;
                 }
             }
-            /*case remove -> {
+            case remove -> {
                 try {
                     this.iterator.remove();
                 } catch (IllegalStateException e) {
@@ -56,14 +55,14 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
                 } catch (UnsupportedOperationException e) {
                     throw new RuntimeException("Iterator should support operation");
                 }
-                if (!function.getParameterValues()[0].getId().equals(this.iterator.listSize())) {
+                /*if (!function.getParameterValues()[0].getId().equals(this.iterator.listSize())) {
                     return false;
-                }
-            }*/
+                }*/
+            }
             case add -> {
-                if (!function.getParameterValues()[0].getId().equals(1) || this.iterator.tooFar()) {
+                /*if (!function.getParameterValues()[0].getId().equals(1) || this.iterator.tooFar()) {
                     return false;
-                }
+                }*/
                 try {
                     this.iterator.add(null);
                 } catch (OutOfMemoryError e) {
@@ -77,17 +76,18 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
     @Override
     public void processQuery(Query<PSymbolInstance, Boolean> query) {
         iterator.reset();
-        if (query.getInput().length() == 0) {
+        /*if (query.getInput().length() == 0) {
             query.answer(true);
             return;
-        }
+        }*/
 
-        PSymbolInstance function = query.getInput().asList().get(0);
-        if (!functions.getFunction(function.getBaseSymbol()).equals(init) || !function.getParameterValues()[0].getId().equals(0)) {
+//        PSymbolInstance function = query.getInput().asList().get(0);
+        /*if (!functions.getFunction(function.getBaseSymbol()).equals(init) || !function.getParameterValues()[0].getId().equals(0)) {
             query.answer(false);
             return;
-        }
-        for (PSymbolInstance input : query.getInput().asList().subList(1, query.getInput().length())) {
+        }*/
+//        for (PSymbolInstance input : query.getInput().asList().subList(1, query.getInput().length())) {
+        for (PSymbolInstance input : query.getInput().asList()) {
             if (!step(input)) {
                 query.answer(false);
                 return;

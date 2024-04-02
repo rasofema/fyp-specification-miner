@@ -22,10 +22,6 @@ public class BoundedList<T> implements Iterable<T> {
         list.add(elem);
     }
 
-    public void addDummy(T elem) {
-        list.add(elem);
-    }
-
     public int size() {
         return list.size();
     }

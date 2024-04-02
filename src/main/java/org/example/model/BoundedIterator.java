@@ -3,11 +3,12 @@ package org.example.model;
 import java.util.Iterator;
 
 public class BoundedIterator<E> {
-    private static final int BOUND = 2;
+    private final int BOUND;
     private int position;
     private BoundedList<E> list;
     private Iterator<E> iter;
-    public BoundedIterator() {
+    public BoundedIterator(int bound) {
+        BOUND = bound;
         reset();
     }
 
