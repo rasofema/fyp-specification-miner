@@ -10,8 +10,13 @@ import net.automatalib.alphabet.impl.GrowingMapAlphabet;
 import java.util.*;
 
 class FunctionSymbol extends ParameterizedSymbol {
+    private static final DataType dt = new DataType("INT", Integer.class);
     public FunctionSymbol(String name) {
-        super(name, new DataType("INT", Integer.class));
+        super(name, dt);
+    }
+
+    public static DataType getDataType() {
+        return dt;
     }
 }
 
@@ -20,6 +25,7 @@ public class Functions {
     private final Map<ParameterizedSymbol, Function> map2 = new LinkedHashMap<>();
     private final Map<String, PSymbolInstance> mapString = new LinkedHashMap<>();
     private final Map<String, PSymbolInstance> mapStringWithoutData = new LinkedHashMap<>();
+
     public enum Function {
         hasNextTrue,
         hasNextFalse,
@@ -29,12 +35,13 @@ public class Functions {
 //        init
     }
     public Functions() {
+        DataValue<Integer> dv = new DataValue<>(FunctionSymbol.getDataType(), 0);
         for (Function f : Function.values()) {
             FunctionSymbol fs = new FunctionSymbol(f.toString());
             map2.put(fs, f);
-            map.put(new PSymbolInstance(fs), f);
-            mapString.put(f.name(), new PSymbolInstance(fs, new DataValue<>(fs.getPtypes()[0], 0)));
-            mapStringWithoutData.put(f.name(), new PSymbolInstance(fs));
+            map.put(new PSymbolInstance(fs, dv), f);
+            mapString.put(f.name(), new PSymbolInstance(fs, dv));
+            mapStringWithoutData.put(f.name(), new PSymbolInstance(fs, dv));
         }
     }
 

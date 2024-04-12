@@ -1,0 +1,52 @@
+digraph g {
+
+	s0 [shape="circle" label="l0 (+)"];
+	s1 [shape="circle" label="l1 (+)"];
+	s2 [shape="circle" label="l2 (+)"];
+	s3 [shape="circle" label="l3 (+)"];
+	s4 [shape="circle" label="l4 (+)"];
+	s5 [shape="circle" label="l5 (-)"];
+	s0 -> s4 [label="hasNextTrue[0[INT]]"];
+	s0 -> s5 [label="hasNextTrue[0[INT]]"];
+	s0 -> s1 [label="hasNextFalse[0[INT]]"];
+	s0 -> s5 [label="hasNextFalse[0[INT]]"];
+	s0 -> s5 [label="next[0[INT]]"];
+	s0 -> s5 [label="remove[0[INT]]"];
+	s0 -> s2 [label="add[0[INT]]"];
+	s0 -> s5 [label="add[0[INT]]"];
+	s1 -> s5 [label="hasNextTrue[0[INT]]"];
+	s1 -> s1 [label="hasNextFalse[0[INT]]"];
+	s1 -> s5 [label="hasNextFalse[0[INT]]"];
+	s1 -> s5 [label="next[0[INT]]"];
+	s1 -> s5 [label="remove[0[INT]]"];
+	s1 -> s2 [label="add[0[INT]]"];
+	s1 -> s5 [label="add[0[INT]]"];
+	s2 -> s2 [label="hasNextTrue[0[INT]]"];
+	s2 -> s5 [label="hasNextTrue[0[INT]]"];
+	s2 -> s5 [label="hasNextFalse[0[INT]]"];
+	s2 -> s3 [label="next[0[INT]]"];
+	s2 -> s5 [label="next[0[INT]]"];
+	s2 -> s5 [label="remove[0[INT]]"];
+	s2 -> s5 [label="add[0[INT]]"];
+	s3 -> s5 [label="hasNextTrue[0[INT]]"];
+	s3 -> s3 [label="hasNextFalse[0[INT]]"];
+	s3 -> s5 [label="hasNextFalse[0[INT]]"];
+	s3 -> s5 [label="next[0[INT]]"];
+	s3 -> s1 [label="remove[0[INT]]"];
+	s3 -> s5 [label="remove[0[INT]]"];
+	s3 -> s5 [label="add[0[INT]]"];
+	s4 -> s5 [label="hasNextTrue[0[INT]]"];
+	s4 -> s5 [label="hasNextFalse[0[INT]]"];
+	s4 -> s5 [label="next[0[INT]]"];
+	s4 -> s5 [label="remove[0[INT]]"];
+	s4 -> s5 [label="add[0[INT]]"];
+	s5 -> s5 [label="hasNextTrue[0[INT]]"];
+	s5 -> s5 [label="hasNextFalse[0[INT]]"];
+	s5 -> s5 [label="next[0[INT]]"];
+	s5 -> s5 [label="remove[0[INT]]"];
+	s5 -> s5 [label="add[0[INT]]"];
+
+__start0 [label="" shape="none" width="0" height="0"];
+__start0 -> s0;
+
+}
