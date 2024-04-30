@@ -13,11 +13,11 @@ digraph g {
 	s1 -> s1 [label="next"];
 	s1 -> s1 [label="remove"];
 	s2 -> s3 [label="hasNextTrue"];
-	s2 -> s2 [label="hasNextFalse"];
+	s2 -> s0 [label="hasNextFalse"];
 	s2 -> s1 [label="next"];
 	s2 -> s0 [label="remove"];
 	s3 -> s3 [label="hasNextTrue"];
-	s3 -> s2 [label="hasNextFalse"];
+	s3 -> s0 [label="hasNextFalse"];
 	s3 -> s2 [label="next"];
 	s3 -> s1 [label="remove"];
 

@@ -36,9 +36,8 @@ public class IterOracle implements SingleQueryOracleDFA<Function> {
                 }
             }
             case hasNextFalse -> {
-                while (this.iter.hasNext()) {
-                    this.iter.next();
-                }
+                this.iter = new ArrayList<>().iterator();
+                if (this.iter.hasNext()) throw new RuntimeException("Iterator should not have next");
             }
             case next -> {
                 try {
