@@ -73,20 +73,15 @@ public class Controller {
     }
 
     private Output<PSymbolInstance, Boolean> learn_ra(DataWordOracle mqOracle) {
-        PSymbolInstance[] array = this.functions.getArray();
-        ParameterizedSymbol[] functions = new ParameterizedSymbol[array.length];
-        for (int i=0; i<array.length; i++) {
-            functions[i] = array[i].getBaseSymbol();
+        List<PSymbolInstance> array = this.functions.getList();
+        ParameterizedSymbol[] functions = new ParameterizedSymbol[array.size()];
+        for (int i=0; i<array.size(); i++) {
+            functions[i] = array.get(i).getBaseSymbol();
         }
 
-
         Map<DataType, Theory> teachers = new LinkedHashMap<>();
-        DataType dataType = new DataType("INT", Integer.class);
-        teachers.put(dataType, new IntegerEqualityTheory(dataType));
         ConstraintSolver solver = new SimpleConstraintSolver();
         Constants consts = new Constants();
-        consts.put(new SymbolicDataValue.Constant(dataType, 0), new DataValue<>(dataType, 0));
-        consts.put(new SymbolicDataValue.Constant(dataType, 1), new DataValue<>(dataType, 1));
 
         SDTLogicOracle slo = new MultiTheorySDTLogicOracle(consts, solver);
 
@@ -168,8 +163,7 @@ public class Controller {
             learner.refineHypothesisFromUser(
                     new DefaultQuery<>(
                             Word.epsilon(),
-//                          TODO: NEED TO FIX TYPE OF GETTING
-                            Word.fromList(cex.stream().map(this.functions::getFunctionFromNameWithoutData).toList()),
+                            Word.fromList(cex.stream().map(this.functions::getPSymbolInstance).toList()),
                             out));
         } catch (LearningFinishedException ignored) {}
 

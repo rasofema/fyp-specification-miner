@@ -9,58 +9,52 @@ import net.automatalib.alphabet.impl.GrowingMapAlphabet;
 
 import java.util.*;
 
-class FunctionSymbol extends ParameterizedSymbol {
-    private static final DataType dt = new DataType("INT", Integer.class);
-    public FunctionSymbol(String name) {
-        super(name, dt);
-    }
+import static org.example.model.Functions.Function.*;
 
-    public static DataType getDataType() {
-        return dt;
+class FunctionSymbol extends ParameterizedSymbol {
+    public FunctionSymbol(String name) {
+        super(name);
     }
 }
 
 public class Functions {
-    private final Map<PSymbolInstance, Function> map = new LinkedHashMap<>();
-    private final Map<ParameterizedSymbol, Function> map2 = new LinkedHashMap<>();
+    private final Map<ParameterizedSymbol, Function> map = new LinkedHashMap<>();
     private final Map<String, PSymbolInstance> mapString = new LinkedHashMap<>();
-    private final Map<String, PSymbolInstance> mapStringWithoutData = new LinkedHashMap<>();
-
     public enum Function {
         hasNextTrue,
         hasNextFalse,
         next,
         remove,
-        add,
-//        init
+        add
     }
     public Functions() {
-        DataValue<Integer> dv = new DataValue<>(FunctionSymbol.getDataType(), 0);
         for (Function f : Function.values()) {
             FunctionSymbol fs = new FunctionSymbol(f.toString());
-            map2.put(fs, f);
-            map.put(new PSymbolInstance(fs, dv), f);
-            mapString.put(f.name(), new PSymbolInstance(fs, dv));
-            mapStringWithoutData.put(f.name(), new PSymbolInstance(fs, dv));
+            map.put(fs, f);
+            mapString.put(f.name(), new PSymbolInstance(fs));
         }
     }
 
     public Function getFunction(ParameterizedSymbol i) {
-        return map2.get(i);
+        return map.get(i);
     }
 
-    public PSymbolInstance getFunctionFromNameWithoutData(String name) {
-        return mapStringWithoutData.get(name);
+    public PSymbolInstance getPSymbolInstance(String name) {
+        for (ParameterizedSymbol sym : map.keySet()) {
+            if (sym.getName().equals(name))
+                return new PSymbolInstance(sym);
+        }
+        return null;
     }
 
     public Alphabet<PSymbolInstance> getAlphabet() {
         Alphabet<PSymbolInstance> alphabet = new GrowingMapAlphabet<>();
-        alphabet.addAll(Arrays.stream(getArray()).toList());
+        alphabet.addAll(getList());
         return alphabet;
     }
 
-    public PSymbolInstance[] getArray() {
-        return map.keySet().toArray(new PSymbolInstance[0]);
+    public List<PSymbolInstance> getList() {
+        return map.keySet().stream().map(PSymbolInstance::new).toList();
     }
 
 }
