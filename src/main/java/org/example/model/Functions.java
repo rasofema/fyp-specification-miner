@@ -2,8 +2,8 @@ package org.example.model;
 
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
-import net.automatalib.words.Alphabet;
-import net.automatalib.words.impl.GrowingMapAlphabet;
+import net.automatalib.alphabet.Alphabet;
+import net.automatalib.alphabet.GrowingMapAlphabet;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;

@@ -1,6 +1,6 @@
 package org.example.controller;
 
-import de.learnlib.api.query.DefaultQuery;
+import de.learnlib.query.DefaultQuery;
 import de.learnlib.ralib.automata.RegisterAutomaton;
 import de.learnlib.ralib.data.Constants;
 import de.learnlib.ralib.data.DataType;
@@ -22,7 +22,7 @@ import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
-import net.automatalib.automata.Automaton;
+import net.automatalib.automaton.Automaton;
 import net.automatalib.serialization.dot.GraphDOT;
 import org.example.model.Functions;
 import org.example.model.IterOracle;
@@ -79,10 +79,10 @@ public class Runner {
 
 //      LEARN
         int check = 0;
+        learner.startLearning();
         while (check < 100) {
             check++;
-            learner.learn();
-            Hypothesis hyp = learner.getHypothesis();
+            Hypothesis hyp = (Hypothesis) learner.getHypothesisModel();
             ce = eqOracle.findCounterExample(hyp, null);
             if (ce == null) {
                 break;
@@ -90,10 +90,10 @@ public class Runner {
             if (ce.getOutput().equals(hyp.accepts(ce.getInput()))) {
                 throw new RuntimeException("Should not accept");
             }
-            learner.addCounterexample(ce);
+            learner.refineHypothesis(ce);
         }
 
-        Hypothesis hyp = learner.getHypothesis();
+        Hypothesis hyp = (Hypothesis) learner.getHypothesisModel();
 
         return hyp;
 
@@ -122,7 +122,7 @@ public class Runner {
             functions[i] = array[i].getBaseSymbol();
         }
         try {
-            GraphDOT.write(hyp, Arrays.stream(functions).toList(), new FileWriter("ralearn.dot"));
+            GraphDOT.write((Automaton) hyp, Arrays.stream(array).toList(), new FileWriter("ralearn.dot"));
             Graphviz.fromFile(new File("ralearn.dot")).render(Format.PNG).toFile(new File("ra-out.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
