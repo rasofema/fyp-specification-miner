@@ -45,15 +45,4 @@ public class BoundedIterator<E> {
         updateIterState();
     }
 
-    public int size() {
-        return this.position;
-    }
-
-    public boolean tooFar() {
-        return this.list.size() - this.position > 5;
-    }
-
-    public int listSize() {
-        return this.list.size();
-    }
 }

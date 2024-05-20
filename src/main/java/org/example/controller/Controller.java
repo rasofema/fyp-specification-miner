@@ -17,8 +17,6 @@ import de.learnlib.ralib.automata.RegisterAutomaton;
 import de.learnlib.ralib.automata.tree.AdaptiveRATreeBuilder;
 import de.learnlib.ralib.data.Constants;
 import de.learnlib.ralib.data.DataType;
-import de.learnlib.ralib.data.DataValue;
-import de.learnlib.ralib.data.SymbolicDataValue;
 import de.learnlib.ralib.learning.ralambda.RaDT;
 import de.learnlib.ralib.learning.ralambda.RaLambda;
 import de.learnlib.ralib.learning.rastar.RaStar;
@@ -28,7 +26,6 @@ import de.learnlib.ralib.oracles.mto.MultiTheoryTreeOracle;
 import de.learnlib.ralib.solver.ConstraintSolver;
 import de.learnlib.ralib.solver.simple.SimpleConstraintSolver;
 import de.learnlib.ralib.theory.Theory;
-import de.learnlib.ralib.tools.theories.IntegerEqualityTheory;
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
 import guru.nidi.graphviz.engine.Format;
@@ -60,12 +57,16 @@ public class Controller {
     private final Functions functions;
     private C3AL<?, PSymbolInstance, Boolean> learner;
     private SupportedLearningAlgorithm algorithm;
+    private final AdaptiveRATreeBuilder raTreeBuilder;
+    private final AdaptiveDFATreeBuilder<PSymbolInstance> dfaTreeBuilder;
     private final int maxQueries = 200000;
     public Controller() {
         this.functions = new Functions();
         this.alphabet = this.functions.getAlphabet();
         this.frame = new MainFrame(this);
         this.algorithm = SupportedLearningAlgorithm.DFA_ClassicLStar;
+        this.raTreeBuilder = new AdaptiveRATreeBuilder(this.alphabet);
+        this.dfaTreeBuilder = new AdaptiveDFATreeBuilder<>(this.alphabet);
     }
 
     public void setAlgorithm(SupportedLearningAlgorithm algorithm) {
@@ -112,9 +113,8 @@ public class Controller {
                     default -> throw new UnsupportedOperationException();
         };
 
-        this.learner = new C3AL_RA(constructor, mqOracle, mqOracle, eqOracle, this.alphabet,
-                new AdaptiveRATreeBuilder(this.alphabet), new Random(1),
-                new LatestWithMaxEventHandler<>(this.maxQueries));
+        this.learner = new C3AL_RA(constructor, mqOracle, mqOracle, eqOracle, this.alphabet, this.raTreeBuilder,
+                new Random(1), new LatestWithMaxEventHandler<>(this.maxQueries));
 
 //      LEARN
         learner.run();
@@ -140,10 +140,8 @@ public class Controller {
                     default -> throw new UnsupportedOperationException();
                 };
 
-        this.learner = new C3AL_DFA(constructor, mqOracle, mqOracle, eqOracle, this.alphabet,
-                new AdaptiveDFATreeBuilder<>(this.alphabet), new Random(1),
-                new LatestWithMaxEventHandler<>(this.maxQueries)
-        );
+        this.learner = new C3AL_DFA(constructor, mqOracle, mqOracle, eqOracle, this.alphabet, this.dfaTreeBuilder,
+                new Random(1), new LatestWithMaxEventHandler<>(this.maxQueries));
 
 
         // LEARN
@@ -158,18 +156,14 @@ public class Controller {
         System.out.println("Called update from user with:");
         System.out.println(cex);
         System.out.println(out);
+        Word<PSymbolInstance> input = Word.fromList(cex.stream().map(this.functions::getPSymbolInstance).toList());
+        this.dfaTreeBuilder.insertFromUser(input, out);
+        this.raTreeBuilder.insertFromUser(input, out);
 
-        try {
-            learner.refineHypothesisFromUser(
-                    new DefaultQuery<>(
-                            Word.epsilon(),
-                            Word.fromList(cex.stream().map(this.functions::getPSymbolInstance).toList()),
-                            out));
-        } catch (LearningFinishedException ignored) {}
+        learner.restartLearning();
 
         learner.run();
         outputResults((Automaton<?, PSymbolInstance, ?>) learner.getHypothesisModel(), "ra-out");
-
     }
 
     public void outputResults(Automaton<?, PSymbolInstance, ?> automaton, String file) {

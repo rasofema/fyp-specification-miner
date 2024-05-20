@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 
 public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershipOracle<PSymbolInstance> {
 
-    private Functions functions = new Functions();
+    private final Functions functions = new Functions();
     private boolean silentFailAdd = false;
     public void setSilentFailAddTrue() {
         this.silentFailAdd = true;
@@ -26,12 +26,12 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
 
     private Boolean step(PSymbolInstance function) {
         switch (functions.getFunction(function.getBaseSymbol())) {
-            case hasNextTrue -> {
-                return this.iterator.hasNext();
-            }
-            case hasNextFalse -> {
-                return !this.iterator.hasNext();
-            }
+//            case hasNextTrue -> {
+//                return this.iterator.hasNext();
+//            }
+//            case hasNextFalse -> {
+//                return !this.iterator.hasNext();
+//            }
             case next -> {
                 try {
                     this.iterator.next();

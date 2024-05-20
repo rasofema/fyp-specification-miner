@@ -1,15 +1,11 @@
 package org.example.model;
 
-import de.learnlib.ralib.data.DataType;
-import de.learnlib.ralib.data.DataValue;
 import de.learnlib.ralib.words.PSymbolInstance;
 import de.learnlib.ralib.words.ParameterizedSymbol;
 import net.automatalib.alphabet.Alphabet;
 import net.automatalib.alphabet.impl.GrowingMapAlphabet;
 
 import java.util.*;
-
-import static org.example.model.Functions.Function.*;
 
 class FunctionSymbol extends ParameterizedSymbol {
     public FunctionSymbol(String name) {
@@ -21,8 +17,8 @@ public class Functions {
     private final Map<ParameterizedSymbol, Function> map = new LinkedHashMap<>();
     private final Map<String, PSymbolInstance> mapString = new LinkedHashMap<>();
     public enum Function {
-        hasNextTrue,
-        hasNextFalse,
+//        hasNextTrue,
+//        hasNextFalse,
         next,
         remove,
         add
@@ -40,11 +36,7 @@ public class Functions {
     }
 
     public PSymbolInstance getPSymbolInstance(String name) {
-        for (ParameterizedSymbol sym : map.keySet()) {
-            if (sym.getName().equals(name))
-                return new PSymbolInstance(sym);
-        }
-        return null;
+        return mapString.get(name);
     }
 
     public Alphabet<PSymbolInstance> getAlphabet() {
