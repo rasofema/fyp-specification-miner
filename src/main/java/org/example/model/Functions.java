@@ -17,8 +17,8 @@ public class Functions {
     private final Map<ParameterizedSymbol, Function> map = new LinkedHashMap<>();
     private final Map<String, PSymbolInstance> mapString = new LinkedHashMap<>();
     public enum Function {
-//        hasNextTrue,
-//        hasNextFalse,
+        hasNextTrue,
+        hasNextFalse,
         next,
         remove,
         add

@@ -26,12 +26,12 @@ public class IterOracle implements DataWordOracle, MembershipOracle.DFAMembershi
 
     private Boolean step(PSymbolInstance function) {
         switch (functions.getFunction(function.getBaseSymbol())) {
-//            case hasNextTrue -> {
-//                return this.iterator.hasNext();
-//            }
-//            case hasNextFalse -> {
-//                return !this.iterator.hasNext();
-//            }
+            case hasNextTrue -> {
+                return this.iterator.hasNext();
+            }
+            case hasNextFalse -> {
+                return !this.iterator.hasNext();
+            }
             case next -> {
                 try {
                     this.iterator.next();
